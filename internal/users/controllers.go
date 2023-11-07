@@ -30,24 +30,27 @@ func MakeCreateUsersController(service Service) Controller {
 			return
 		}
 
-		err = service.Create(req.LastName, req.LastName, req.Email, req.Phone)
-
-		if err != nil {
+		// sent information to the service to save them
+		user, errService := service.Create(req.FirstName, req.LastName, req.Email, req.Phone)
+		if errService != nil {
 			w.WriteHeader(500)
-			json.NewEncoder(w).Encode(ErrorRequest{Error: err.Error()})
+			json.NewEncoder(w).Encode(ErrorRequest{Error: errService.Error()})
 			return
 		}
 
+		// response request
 		w.WriteHeader(statusCode)
-		json.NewEncoder(w).Encode(req)
+		json.NewEncoder(w).Encode(user)
 	}
 }
+
 func MakeGetUsersController(s Service) Controller {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("get user")
 		json.NewEncoder(w).Encode(map[string]bool{"get": true})
 	}
 }
+
 func MakeGetAllUsersController(s Service) Controller {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("getall user")
@@ -61,6 +64,7 @@ func MakeDeleteUsersController(s Service) Controller {
 		json.NewEncoder(w).Encode(map[string]bool{"deleted": true})
 	}
 }
+
 func MakeUpdateUsersController(s Service) Controller {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("update user")
