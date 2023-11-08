@@ -23,6 +23,12 @@ type (
 		Email     string `json:"email"`
 		Phone     string `json:"phone"`
 	}
+	UpdateRequest struct {
+		FirstName *string `json:"first_name"`
+		LastName  *string `json:"last_name"`
+		Email     *string `json:"email"`
+		Phone     *string `json:"phone"`
+	}
 	// ===================================== Error =========================================
 	ErrorRequest struct {
 		Error string `json:"error"`
@@ -30,15 +36,23 @@ type (
 	// ===================================== Service =========================================
 	Service interface {
 		Create(firstName, lastName, email, phone string) (*User, error)
+		GetAll() ([]User, error)
+		Get(id string) (*User, error)
+		Delete(id string) error
+		Update(id string, firstName *string, lastName *string, email *string, phone *string) (map[string]interface{}, error)
 	}
 	UserService struct {
-		repo   Repository
-		logger *log.Logger
+		repository Repository
+		logger     *log.Logger
 	} // Object which is going to include the interface
 
 	// ===================================== Repository =========================================
 	Repository interface {
 		Create(user *User) error
+		GetAll() ([]User, error)
+		Get(id string) (*User, error)
+		Delete(id string) error
+		Update(id string, firstName *string, lastName *string, email *string, phone *string) (map[string]interface{}, error)
 	}
 	UserRepository struct {
 		db     *gorm.DB
